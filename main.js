@@ -232,7 +232,7 @@
     var ctx = cv.getContext('2d'), img = new Image();
     var cell = 8, cols = 0, rows = 0, lum, alpha, glyph, heat, rate, live = {}, fitBox;
     var bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-    var band = 0, lastTick = 0, lastT = 0, visible = true, running = false;
+    var fresh, freshLive = {}, spanL, spanR, writers = [], lastTick = 0, lastT = 0, visible = true, running = false;
 
     // Square frame: fill the width, start 27% down the photo (trims the empty top, keeps the torso).
     function fit(iw, ih, W, H) {
@@ -253,6 +253,7 @@
       ctx.fillRect(x, y, cell, cell);
       if (hv < 1) {
         ctx.globalAlpha = 1 - hv;
+        hot = hot || fresh[i] > 0;
         if (on) {
           ctx.fillStyle = hot ? color.text : color.accentText;
           ctx.fillText(glyph[i], x + cell / 2, y + cell / 2 + .5);
@@ -268,9 +269,33 @@
       }
       ctx.globalAlpha = 1;
     }
-    function paintRow(r, hot) {
-      if (r < 0 || r >= rows) return;
-      for (var c = 0; c < cols; c++) paint(r * cols + c, hot);
+    // Typing cursors: each writes a code-like line (random indent and length) inside the figure, then moves down.
+    function newLine(w) {
+      for (var tries = 0; tries < rows; tries++) {
+        w.r = (w.r + 1) % rows;
+        if (spanR[w.r] - spanL[w.r] > 3) break;
+      }
+      var L = spanL[w.r], R = spanR[w.r];
+      w.c = Math.min(R - 1, L + Math.floor(Math.random() * 4) * 2);
+      w.end = Math.min(R, w.c + 4 + Math.floor(Math.random() * (R - w.c)));
+    }
+    function caret(w) {
+      if (w.r >= rows || w.c >= cols) return;
+      ctx.fillStyle = color.text;
+      ctx.fillRect(w.c * cell + 1, w.r * cell + 1, cell - 2, cell - 2);
+    }
+    function type(w, n) {
+      w.acc += n;
+      while (w.acc >= 1) {
+        w.acc--;
+        var i = w.r * cols + w.c;
+        glyph[i] = roll(lum[i]);
+        fresh[i] = 1; freshLive[i] = true;
+        paint(i, false);
+        w.c++;
+        if (w.c >= w.end) newLine(w);
+      }
+      caret(w);
     }
     function build() {
       var w = cv.offsetWidth, h = cv.offsetHeight;
@@ -290,11 +315,24 @@
       var n = cols * rows, d = octx.getImageData(0, 0, cols, rows).data;
       lum = new Float32Array(n); alpha = new Float32Array(n); glyph = new Array(n);
       heat = new Float32Array(n); rate = new Float32Array(n); live = {};
+      fresh = new Float32Array(n); freshLive = {};
+      spanL = new Int16Array(rows); spanR = new Int16Array(rows);
       for (var i = 0; i < n; i++) {
         alpha[i] = d[i * 4 + 3] / 255;
         lum[i] = (0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]) / 255 * alpha[i];
         glyph[i] = lum[i] > 0.62 ? '$' : lum[i] > 0.38 ? '1' : '0';
         rate[i] = 0.955 + Math.random() * 0.032;
+      }
+      for (var y = 0; y < rows; y++) {
+        var L = -1, R = -1;
+        for (var x = 0; x < cols; x++) if (alpha[y * cols + x] > 0.1) { if (L < 0) L = x; R = x + 1; }
+        spanL[y] = Math.max(0, L); spanR[y] = Math.max(0, R);
+      }
+      writers = [];
+      for (var wn = 0; wn < (reduce ? 1 : 3); wn++) {
+        var wr = { r: Math.floor(rows * (0.2 + wn * 0.27)), c: 0, end: 0, acc: 0 };
+        newLine(wr);
+        writers.push(wr);
       }
       for (var j = 0; j < n; j++) paint(j, false);
       start();
@@ -311,33 +349,29 @@
         if (heat[i] < 0.04) { heat[i] = 0; delete live[key]; }
         paint(i, false);
       }
-      if (!reduce) {
-        // Code: a few characters re-roll every 70ms...
-        if (now - lastTick > 70) {
-          lastTick = now;
-          var count = Math.floor(cols * rows * 0.025);
-          for (var k = 0; k < count; k++) {
-            var idx = (Math.random() * cols * rows) | 0;
-            glyph[idx] = roll(lum[idx]);
-            paint(idx, false);
-          }
+      // Code runs all the time (slower and calmer with reduced motion): freshly typed characters glow, then settle...
+      for (var fk in freshLive) {
+        var f = +fk;
+        fresh[f] -= dt * 0.0022;
+        if (fresh[f] <= 0) { fresh[f] = 0; delete freshLive[fk]; paint(f, false); }
+      }
+      // ...cursors type new lines...
+      for (var wi = 0; wi < writers.length; wi++) type(writers[wi], dt * (reduce ? 0.012 : 0.045));
+      // ...and scattered characters keep flipping.
+      if (now - lastTick > (reduce ? 400 : 70)) {
+        lastTick = now;
+        var count = Math.floor(cols * rows * (reduce ? 0.006 : 0.03));
+        for (var k = 0; k < count; k++) {
+          var idx = (Math.random() * cols * rows) | 0;
+          glyph[idx] = roll(lum[idx]);
+          paint(idx, false);
         }
-        // ...and a typing band sweeps down, rewriting each line as it passes.
-        var prev = band | 0;
-        band = (band + dt * 0.011) % (rows + 6);
-        var cur = band | 0;
-        if (cur !== prev) {
-          paintRow(prev - 1, false);
-          for (var c = 0; c < cols; c++) { var t = cur * cols + c; if (t < glyph.length) glyph[t] = roll(lum[t]); }
-          paintRow(cur - 1, true);
-          paintRow(cur, true);
-        }
+        for (var wc = 0; wc < writers.length; wc++) caret(writers[wc]);
       }
       start();
     }
     function start() {
       if (running || !visible || !heat) return;
-      if (reduce && !Object.keys(live).length) return;
       running = true;
       requestAnimationFrame(frame);
     }
