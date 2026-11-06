@@ -48,12 +48,25 @@
   var lenis = null;
   if (gsap && ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
   if (!reduce && Lenis) {
-    lenis = new Lenis({ lerp: 0.1, smoothWheel: true, anchors: true, autoRaf: !gsap });
+    lenis = new Lenis({ lerp: 0.1, smoothWheel: true, autoRaf: !gsap });
     if (gsap) {
       gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
       gsap.ticker.lagSmoothing(0);
       if (ScrollTrigger) lenis.on('scroll', ScrollTrigger.update);
     }
+    // In-page links: Lenis's own `anchors` option smooth-scrolls but doesn't cancel the browser's
+    // instant hash jump, so the two fight and the first click glitches. Cancel the jump, then scroll.
+    document.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var hash = a.getAttribute('href');
+      var dest = hash === '#top' || hash === '#' ? 0 : document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (dest == null) return;
+      e.preventDefault();
+      lenis.scrollTo(dest);
+      if (history.replaceState) history.replaceState(null, '', hash);
+    });
   }
 
   /* ---------------------------------------------------------------- Headline reveal */
