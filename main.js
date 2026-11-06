@@ -64,6 +64,9 @@
       var dest = hash === '#top' || hash === '#' ? 0 : document.getElementById(decodeURIComponent(hash.slice(1)));
       if (dest == null) return;
       e.preventDefault();
+      // Resync first: after scrollbar, keyboard or touch scrolling Lenis can still hold an old
+      // position, and it measures the target from that, overshooting the section.
+      lenis.reset();
       lenis.scrollTo(dest);
       if (history.replaceState) history.replaceState(null, '', hash);
     });
