@@ -73,10 +73,12 @@ button { font: inherit; }
 .word.accent { color: var(--accent-text); }
 
 .face-panel { position: relative; justify-self: end; width: min(100%, (100vh - 140px) * .8); width: min(100%, (100svh - 140px) * .8); max-width: 580px; aspect-ratio: 4 / 5; background: var(--hero); overflow: hidden; border-radius: 4px; cursor: crosshair; }
-.face-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; filter: grayscale(1) contrast(1.15) brightness(1.05); mix-blend-mode: multiply; }
-.face-pixel { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; image-rendering: pixelated; clip-path: inset(32% 31.5% 38.4% 31.5%); z-index: 2; opacity: 0; transition: opacity 150ms ease; }
-.face-frame { position: absolute; left: 31.5%; top: 32%; width: 37%; aspect-ratio: 1; border: 3px solid var(--on-accent); z-index: 3; pointer-events: none; opacity: 0; transform: rotate(-1deg) scale(.92); transition: opacity 160ms ease, transform 240ms var(--ease-out); }
-.face-link { position: absolute; left: 31.5%; top: 32%; width: 37%; aspect-ratio: 1; z-index: 5; text-decoration: none; opacity: 0; pointer-events: none; transition: opacity 150ms ease; }
+/* The photo fills the card (cover), cropped mostly from the top. The face box below (frame, link,
+   pixel clip and the hover zone in main.js) is placed on the face for this exact crop. */
+.face-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 80%; filter: grayscale(1) contrast(1.15) brightness(1.05); mix-blend-mode: multiply; }
+.face-pixel { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 80%; image-rendering: pixelated; clip-path: inset(12% 23.8% 46.1% 23.8%); z-index: 2; opacity: 0; transition: opacity 150ms ease; }
+.face-frame { position: absolute; left: 23.8%; top: 12%; width: 52.4%; aspect-ratio: 1; border: 3px solid var(--on-accent); z-index: 3; pointer-events: none; opacity: 0; transform: rotate(-1deg) scale(.92); transition: opacity 160ms ease, transform 240ms var(--ease-out); }
+.face-link { position: absolute; left: 23.8%; top: 12%; width: 52.4%; aspect-ratio: 1; z-index: 5; text-decoration: none; opacity: 0; pointer-events: none; transition: opacity 150ms ease; }
 .face-link span { position: absolute; left: 62%; top: 88%; padding: 10px 13px; background: var(--on-accent); color: var(--accent); font-family: var(--mono); font-size: 12px; white-space: nowrap; transform: rotate(2deg); }
 .face-panel.face-on .face-pixel, .face-panel.face-on .face-link { opacity: 1; }
 .face-panel.face-on .face-link { pointer-events: auto; }
