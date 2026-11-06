@@ -82,7 +82,7 @@ button { font: inherit; }
 .face-panel.face-on .face-link { pointer-events: auto; }
 .face-panel.face-on .face-frame { opacity: 1; transform: rotate(1deg) scale(1); }
 .trail { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
-.trail img { position: absolute; width: 112px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 4px; box-shadow: 0 12px 30px rgba(0, 0, 0, .35); transform: translate(-50%, -50%); animation: trail 1s var(--ease-out) forwards; }
+.trail img { position: absolute; width: 90px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 4px; box-shadow: 0 12px 30px rgba(0, 0, 0, .35); transform: translate(-50%, -50%); animation: trail 1s var(--ease-out) forwards; }
 @keyframes trail {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(.88); }
   14% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
