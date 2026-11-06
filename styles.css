@@ -73,12 +73,12 @@ button { font: inherit; }
 .word.accent { color: var(--accent-text); }
 
 .face-panel { position: relative; justify-self: end; width: min(100%, (100vh - 140px) * .8); width: min(100%, (100svh - 140px) * .8); max-width: 580px; aspect-ratio: 4 / 5; background: var(--hero); overflow: hidden; border-radius: 4px; cursor: crosshair; }
-/* The photo sits at 80% of the card width, bottom-anchored (orange shows at the sides). The face box
+/* The photo sits at 70% of the card width, bottom-anchored (orange shows at the sides). The face box
    below (frame, link, pixel clip and the hover zone in main.js) is placed on the face for this size. */
-.face-photo { position: absolute; left: 10%; bottom: 0; width: 80%; height: auto; aspect-ratio: 640 / 1132; filter: grayscale(1) contrast(1.15) brightness(1.05); mix-blend-mode: multiply; }
-.face-pixel { position: absolute; left: 10%; bottom: 0; width: 80%; height: auto; aspect-ratio: 640 / 1132; image-rendering: pixelated; clip-path: inset(32% 23.8% 38.4% 23.8%); z-index: 2; opacity: 0; transition: opacity 150ms ease; }
-.face-frame { position: absolute; left: 29.1%; top: 23%; width: 41.9%; aspect-ratio: 1; border: 3px solid var(--on-accent); z-index: 3; pointer-events: none; opacity: 0; transform: rotate(-1deg) scale(.92); transition: opacity 160ms ease, transform 240ms var(--ease-out); }
-.face-link { position: absolute; left: 29.1%; top: 23%; width: 41.9%; aspect-ratio: 1; z-index: 5; text-decoration: none; opacity: 0; pointer-events: none; transition: opacity 150ms ease; }
+.face-photo { position: absolute; left: 15%; bottom: 0; width: 70%; height: auto; aspect-ratio: 640 / 1132; filter: grayscale(1) contrast(1.15) brightness(1.05); mix-blend-mode: multiply; }
+.face-pixel { position: absolute; left: 15%; bottom: 0; width: 70%; height: auto; aspect-ratio: 640 / 1132; image-rendering: pixelated; clip-path: inset(32% 23.8% 38.4% 23.8%); z-index: 2; opacity: 0; transition: opacity 150ms ease; }
+.face-frame { position: absolute; left: 31.7%; top: 32.6%; width: 36.7%; aspect-ratio: 1; border: 3px solid var(--on-accent); z-index: 3; pointer-events: none; opacity: 0; transform: rotate(-1deg) scale(.92); transition: opacity 160ms ease, transform 240ms var(--ease-out); }
+.face-link { position: absolute; left: 31.7%; top: 32.6%; width: 36.7%; aspect-ratio: 1; z-index: 5; text-decoration: none; opacity: 0; pointer-events: none; transition: opacity 150ms ease; }
 .face-link span { position: absolute; left: 62%; top: 88%; padding: 10px 13px; background: var(--on-accent); color: var(--accent); font-family: var(--mono); font-size: 12px; white-space: nowrap; transform: rotate(2deg); }
 .face-panel.face-on .face-pixel, .face-panel.face-on .face-link { opacity: 1; }
 .face-panel.face-on .face-link { pointer-events: auto; }
