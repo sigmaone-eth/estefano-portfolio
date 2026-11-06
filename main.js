@@ -218,9 +218,9 @@
     if (canHover) {
       // The square only shows near the head (its own box plus an 8% margin); the trail runs elsewhere.
       panel.addEventListener('mousemove', function (e) {
-        // Face box matches .face-frame in styles.css (left 23.8%, top 32%, size 52.4% of the width).
-        var p = local(panel, e), W = panel.offsetWidth, top = panel.offsetHeight * 0.32, m = W * 0.08;
-        var near = p.x > W * 0.238 - m && p.x < W * 0.762 + m && p.y > top - m && p.y < top + W * 0.524 + m;
+        // Face box matches .face-frame in styles.css (left 31.7%, top 32.6%, size 36.7% of the width).
+        var p = local(panel, e), W = panel.offsetWidth, top = panel.offsetHeight * 0.326, m = W * 0.08;
+        var near = p.x > W * 0.317 - m && p.x < W * 0.684 + m && p.y > top - m && p.y < top + W * 0.367 + m;
         panel.classList.toggle('face-on', near);
         if (near) return;
         if (last && Math.abs(p.x - last.x) + Math.abs(p.y - last.y) < 70) return;
