@@ -21,8 +21,8 @@
     { n: '01', kind: 'Reel', year: '2026', title: 'Gesture driven collage', img: 'assets/work/01.jpg', href: 'https://www.instagram.com/reel/DbE_e8vRxvb/' },
     { n: '02', kind: 'Reel', year: '2026', title: 'Room scan study', img: 'assets/work/02.jpg', href: 'https://www.instagram.com/reel/DSBotMuDAzJ/' },
     { n: '03', kind: 'Reel', year: '2026', title: 'Signal portrait', img: 'assets/work/03.jpg', href: 'https://www.instagram.com/reel/DTHMGqrDNI2/' },
-    { n: '04', kind: 'Visual diary', year: '2026', title: 'Real time interactive screen', img: 'assets/work/04.jpg', href: 'https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MzQ4MDI1MzM2MjY5MDAz?story_media_id=3986517951536821931&stkn=MTRyOTJ2a2lxN2VzdA==' },
-    { n: '05', kind: 'Visual diary', year: '2026', title: 'Steel tongue in light', img: 'assets/work/05.jpg', href: 'https://www.instagram.com/s/aGlnaGxpZ2h0OjE4MTI0OTE2NjE3Njk3MDYy?story_media_id=3972695447919757193&stkn=MXFqNmRwN3U0eDRocw==' },
+    { n: '04', kind: 'Visual diary', year: '2026', title: 'Real time interactive screen', img: 'assets/work/04.jpg', href: 'https://www.instagram.com/stories/highlights/18348025336269003/' },
+    { n: '05', kind: 'Visual diary', year: '2026', title: 'Steel tongue in light', img: 'assets/work/05.jpg', href: 'https://www.instagram.com/stories/highlights/18124916617697062/' },
     { n: '06', kind: 'Test card', year: '2026', title: '[ Piece 06 ]', img: 'assets/work/06.jpg', href: '' },
     { n: '07', kind: 'Test card', year: '2026', title: '[ Piece 07 ]', img: 'assets/work/07.jpg', href: '' },
     { n: '08', kind: 'Test card', year: '2026', title: '[ Piece 08 ]', img: 'assets/work/08.jpg', href: '' },
@@ -472,9 +472,18 @@
       b.type = 'button';
       b.className = 'card';
       b.setAttribute('aria-label', 'Open ' + d.title + ' full screen');
-      b.innerHTML = '<span class="card-code"></span><span class="card-media"><img alt="" draggable="false"></span>';
-      b.querySelector('.card-code').textContent = d.code;
-      b.querySelector('img').src = d.img;
+      var code = document.createElement('span');
+      code.className = 'card-code';
+      code.textContent = d.code;
+      var cardMedia = document.createElement('span');
+      cardMedia.className = 'card-media';
+      var cardImg = document.createElement('img');
+      cardImg.alt = '';
+      cardImg.draggable = false;
+      cardImg.src = d.img;
+      cardMedia.appendChild(cardImg);
+      b.appendChild(code);
+      b.appendChild(cardMedia);
       b.addEventListener('mouseenter', function () { if (!drag) { hovering = true; setHover(i); } });
       b.addEventListener('focus', function () { setHover(i); });
       b.addEventListener('click', function () { if (moved <= 6) open(i); });
