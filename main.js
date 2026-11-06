@@ -462,7 +462,14 @@
     var prev = flickers.get(el);
     if (prev) cancelAnimationFrame(prev);
     el.setAttribute('aria-label', text);
+    el.style.height = '';
+    el.style.overflow = '';
     if (reduce) { el.textContent = text; return; }
+    // Scrambled glyphs are wider or narrower than the real letters, so a wrapping title would keep
+    // changing its line count and shove the layout around. Hold it at the final text's height.
+    el.textContent = text;
+    var h = el.offsetHeight;
+    if (h) { el.style.height = h + 'px'; el.style.overflow = 'hidden'; }
     var glyphs = '#%&@$/<>01X*', start = null;
     function step(now) {
       if (start === null) start = now;
@@ -471,7 +478,8 @@
         if (ch === ' ' || i < locked) return ch;
         return glyphs.charAt(Math.floor(rnd((i + 1) * 12.9898 + frame * 78.233) * glyphs.length));
       }).join('');
-      if (k < 1) flickers.set(el, requestAnimationFrame(step)); else flickers.delete(el);
+      if (k < 1) flickers.set(el, requestAnimationFrame(step));
+      else { flickers.delete(el); el.style.height = ''; el.style.overflow = ''; }
     }
     flickers.set(el, requestAnimationFrame(step));
   }
